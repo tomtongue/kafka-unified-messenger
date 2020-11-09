@@ -6,5 +6,9 @@ import java.util.Map;
 
 public interface KafkaClient {
     void setProps(Map<String, String> mapProps);
-    void setTopics(ArrayList<String> topics);
+    void setTopics(List<String> topics);
+
+    Map<String, String> getProps();
+    List<String> getTopics();
+
 }
