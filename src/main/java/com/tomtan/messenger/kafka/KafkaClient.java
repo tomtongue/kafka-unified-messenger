@@ -1,4 +1,4 @@
-package com.tomtan.messeger.kafka;
+package com.tomtan.messenger.kafka;
 
 import java.util.ArrayList;
 import java.util.List;

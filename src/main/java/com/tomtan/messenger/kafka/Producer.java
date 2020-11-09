@@ -1,4 +1,4 @@
-package com.tomtan.messeger.kafka;
+package com.tomtan.messenger.kafka;
 
 import org.apache.kafka.clients.producer.*;
 import java.util.Properties;
