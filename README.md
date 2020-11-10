@@ -10,5 +10,15 @@ jar xxx.jar -Dmode=<prod|cons> \
 
 ```
 
+Example:
+
+```
+jar kafka-messenger-sample-0.1.jar
+-Dmode=cons \
+-Dgid=consumer \
+-Dservers="a,b,c" \
+-Dtopics="testa,testb,testc"
+```
+
 ## Limitations
 * Currently only for K=Interger, V=String
