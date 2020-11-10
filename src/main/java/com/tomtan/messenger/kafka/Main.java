@@ -5,10 +5,12 @@ import java.util.Arrays;
 import java.util.Properties;
 import java.util.logging.*;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class Main {
     public static String sysGetProperty(String key) {
         String sysProp = System.getProperty(key);
-        if(sysProp.equals(null)) { throw new IllegalArgumentException(String.format("The key: '%s' is required.", key)); }
+        if(StringUtils.isEmpty(sysProp)) { throw new IllegalArgumentException(String.format("The key: '%s' is required.", key)); }
         return sysProp;
     }
     public static void main(String[] args) {
@@ -45,11 +47,17 @@ public class Main {
                 MessageConsumer messageConsumer = new MessageConsumer(conf);
                 messageConsumer.setGroupId(groupId);
                 messageConsumer.setTopics(topicsList);
-                messageConsumer.subscribe(topicsList);
+
+                String messageConsumerGid = messageConsumer.getGroupId();
+                List<String> messageConsumerTopics = messageConsumer.getTopics();
                 logger.info(String.format(
                         "clientId: %s, subscribed-topics: %s",
-                        messageConsumer.getGroupId(),
-                        messageConsumer.getTopics().toString()));
+                        messageConsumerGid,
+                        messageConsumerTopics.toString()));
+
+                // Subscribe operation
+                messageConsumer.subscribe(messageConsumerTopics);
+
 
                 // TODO: consumerReceive
                 break;

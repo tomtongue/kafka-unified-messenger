@@ -4,6 +4,7 @@ import java.util.*;
 
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
+import org.apache.commons.lang3.StringUtils;
 
 
 public class MessageConsumer implements KafkaClient {
@@ -19,7 +20,7 @@ public class MessageConsumer implements KafkaClient {
 
     // Setter
     public void setClientId(String clientId) {
-        if(clientId.equals(null)) {
+        if(StringUtils.isEmpty(clientId)) {
             this.clientId = "kafka-consumer-" + UUID.randomUUID().toString();
         } else {
             this.clientId = clientId;
@@ -27,7 +28,8 @@ public class MessageConsumer implements KafkaClient {
     }
 
     public void setGroupId(String groupId) {
-        if(groupId.equals(null)) { throw new IllegalArgumentException("Specify groupId, etc"); }
+        if(StringUtils.isEmpty(groupId)) { throw new IllegalArgumentException("Specify groupId, etc"); }
+
         this.groupId = groupId;
     }
 
