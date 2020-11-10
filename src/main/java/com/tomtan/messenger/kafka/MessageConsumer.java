@@ -47,6 +47,10 @@ public class MessageConsumer implements KafkaClient {
     public List<String> getTopics() { return this.topics; }
     public Map<String, String> getProps() { return this.mapProps; }
 
+    // Wrapped subscribe method
+    public void subscribe(List<String> topicsList) {
+        this.consumer.subscribe(topicsList);
+    }
 
     // Show subscribed messages
     public String showMessage(ConsumerRecord<Integer, String> record) {

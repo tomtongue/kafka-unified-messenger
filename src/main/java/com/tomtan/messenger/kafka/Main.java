@@ -32,7 +32,7 @@ public class Main {
         conf.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
 
         String inputLog = String.format(
-                "Mode: %s, specified servers: %s, groupId: %s, topics: %s",
+                "mode: %s, specified servers: %s, groupId: %s, topics: %s",
                 mode, bootstrapServers, groupId, topicsList.toString());
         logger.info(inputLog);
 
@@ -45,9 +45,9 @@ public class Main {
                 MessageConsumer messageConsumer = new MessageConsumer(conf);
                 messageConsumer.setGroupId(groupId);
                 messageConsumer.setTopics(topicsList);
-                // messageConsumer.consumer.subscribe(topicsList);
-                System.out.println(String.format(
-                        "%s, %s",
+                messageConsumer.subscribe(topicsList);
+                logger.info(String.format(
+                        "clientId: %s, subscribed-topics: %s",
                         messageConsumer.getGroupId(),
                         messageConsumer.getTopics().toString()));
 
