@@ -6,16 +6,21 @@ import java.util.Properties;
 import java.util.logging.*;
 
 public class Main {
+    public static String sysGetProperty(String key) {
+        String sysProp = System.getProperty(key);
+        if(sysProp == null) { throw new IllegalArgumentException(String.format("The key: '%s' is required.", key)); }
+        return sysProp;
+    }
     public static void main(String[] args) {
         // Currently, just using `mode` and `topics` parameters
         Logger logger = Logger.getLogger("com.tomtan.messenger.kafka");
-        String mode = System.getProperty("mode");
-        String bootstrapServers = System.getProperty("servers"); // TODO: Move to mapProps param
+        String mode = sysGetProperty("mode");
+        String bootstrapServers = sysGetProperty("servers"); // TODO: Move to mapProps param
 
-        String clientId = System.getProperty("id");
-        String groupId = System.getProperty("gid");
-        String mapProps = System.getProperty("props"); // TODO: Implementation
-        String topics = System.getProperty("topics");
+        // String clientId = System.getProperty("id");
+        String groupId = sysGetProperty("gid");
+        // String mapProps = sysGetProperty("props"); // TODO: Implementation
+        String topics = sysGetProperty("topics");
         List<String> topicsList = Arrays.asList(topics.split(","));
 
         // Move this part to each components in the future
