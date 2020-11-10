@@ -8,7 +8,7 @@ import java.util.logging.*;
 public class Main {
     public static String sysGetProperty(String key) {
         String sysProp = System.getProperty(key);
-        if(sysProp == null) { throw new IllegalArgumentException(String.format("The key: '%s' is required.", key)); }
+        if(sysProp.equals(null)) { throw new IllegalArgumentException(String.format("The key: '%s' is required.", key)); }
         return sysProp;
     }
     public static void main(String[] args) {

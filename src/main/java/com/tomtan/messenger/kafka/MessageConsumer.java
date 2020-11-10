@@ -19,7 +19,7 @@ public class MessageConsumer implements KafkaClient {
 
     // Setter
     public void setClientId(String clientId) {
-        if(clientId == null) {
+        if(clientId.equals(null)) {
             this.clientId = "kafka-consumer-" + UUID.randomUUID().toString();
         } else {
             this.clientId = clientId;
@@ -27,7 +27,7 @@ public class MessageConsumer implements KafkaClient {
     }
 
     public void setGroupId(String groupId) {
-        if(groupId == null) { throw new IllegalArgumentException("Specify groupId, etc"); }
+        if(groupId.equals(null)) { throw new IllegalArgumentException("Specify groupId, etc"); }
         this.groupId = groupId;
     }
 
