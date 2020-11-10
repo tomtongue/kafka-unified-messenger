@@ -49,17 +49,15 @@ public class MessageConsumer implements KafkaClient {
 
 
     // Show subscribed messages
-    public static void showMessage(ConsumerRecord<Integer, String> record) {
-        String payload = String.format("Received (%s, %s)", record.key(), record.value());
-        System.out.println(payload);
+    public String showMessage(ConsumerRecord<Integer, String> record) {
+        return String.format("Received (%s, %s)", record.key(), record.value());
     }
 
     // Commit offset
-    public static void offsetCommit(ConsumerRecord<Integer, String> record, Consumer<Integer, String> consumer) {
+    public void offsetCommit(ConsumerRecord<Integer, String> record, Consumer<Integer, String> consumer) {
         TopicPartition topicPartition = new TopicPartition(record.topic(), record.partition());
         OffsetAndMetadata offsetAndMetadata = new OffsetAndMetadata(record.offset() + 1);
         Map<TopicPartition, OffsetAndMetadata> commit = Collections.singletonMap(topicPartition, offsetAndMetadata);
         consumer.commitSync(commit);
     }
-
 }
