@@ -1,5 +1,6 @@
 package com.tomtan.messenger.kafka;
 
+import java.time.Duration;
 import java.util.*;
 
 import org.apache.kafka.clients.consumer.*;
@@ -49,10 +50,11 @@ public class MessageConsumer implements KafkaClient {
     public List<String> getTopics() { return this.topics; }
     public Map<String, String> getProps() { return this.mapProps; }
 
-    // Wrapped subscribe method
+    // Wrapped methods
     public void subscribe(List<String> topicsList) {
         this.consumer.subscribe(topicsList);
     }
+    public ConsumerRecords<Integer, String> poll(Duration timeout) { return this.consumer.poll(timeout); }
 
     // Show subscribed messages
     public String showMessage(ConsumerRecord<Integer, String> record) {

@@ -1,11 +1,17 @@
 package com.tomtan.messenger.kafka;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.logging.*;
 
+import kafka.common.KafkaException;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.kafka.clients.consumer.InvalidOffsetException;
 
 public class Main {
     public static String sysGetProperty(String key) {
@@ -15,6 +21,7 @@ public class Main {
     }
     public static void main(String[] args) {
         // Currently, just using `mode` and `topics` parameters
+        System.setProperty("java.util.logging.SimpleFormatter.format", "[%1$tFT%1$tTZ] [%4$s] %5$s %n"); // TODO: Move to log42j
         Logger logger = Logger.getLogger("com.tomtan.messenger.kafka");
         String mode = sysGetProperty("mode");
         String bootstrapServers = sysGetProperty("servers"); // TODO: Move to mapProps param
@@ -57,11 +64,26 @@ public class Main {
 
                 // Subscribe operation
                 messageConsumer.subscribe(messageConsumerTopics);
-
-
-                // TODO: consumerReceive
+                try {
+                    while(true) {
+                        try {
+                            logger.info("Polling messages...");
+                            ConsumerRecords<Integer, String> records = messageConsumer.poll(Duration.ofSeconds(5));
+                            for (ConsumerRecord<Integer, String> record : records) {
+                                messageConsumer.showMessage(record);
+                                messageConsumer.offsetCommit(record, messageConsumer.consumer);
+                            }
+                            Thread.sleep(2000);
+                        } catch (InvalidOffsetException ioe) {
+                            ioe.printStackTrace();
+                        } catch (KafkaException ke) {
+                            ke.printStackTrace();
+                        }
+                    }
+                } catch (Exception e) {
+                        e.printStackTrace();
+                }
                 break;
-
             default:
                 throw new IllegalArgumentException("Need to specify 'prod' or 'cons'");
         }
