@@ -87,7 +87,5 @@ public class Main {
             default:
                 throw new IllegalArgumentException("Need to specify 'prod' or 'cons'");
         }
-
-
     }
 }
