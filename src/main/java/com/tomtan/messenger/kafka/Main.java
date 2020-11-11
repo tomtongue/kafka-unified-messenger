@@ -29,16 +29,23 @@ public class Main {
         // String clientId = System.getProperty("id");
         String groupId = sysGetProperty("gid");
         // String mapProps = sysGetProperty("props"); // TODO: Implementation
+        String topic = sysGetProperty("topic");
         String topics = sysGetProperty("topics");
         List<String> topicsList = Arrays.asList(topics.split(","));
 
         // Move this part to each components in the future
+        Properties prodConf = new Properties();
+        prodConf.setProperty("bootstrap.servers", bootstrapServers);
+        prodConf.setProperty("key.serializer", "org.apache.kafka.common.serialization.IntegerSerializer");
+        prodConf.setProperty("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         Properties consConf = new Properties();
         consConf.setProperty("bootstrap.servers", bootstrapServers);
         consConf.setProperty("group.id", groupId);
         consConf.setProperty("enable.auto.commit", "false");
         consConf.setProperty("key.deserializer", "org.apache.kafka.common.serialization.IntegerDeserializer");
         consConf.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+
+
 
         String inputLog = String.format(
                 "mode: %s, specified servers: %s, groupId: %s, topics: %s",
@@ -47,7 +54,30 @@ public class Main {
 
         switch(mode) {
             case("prod"):
-                // TODO: Implementation of Producer
+                MessageProducer messageProducer= new MessageProducer(prodConf);
+                messageProducer.setClientId(null);
+                messageProducer.setTopic(topic);
+
+                String producerTopic = messageProducer.getTopic();
+                try {
+                    logger.info("Start sending messages...");
+                    int seq = 0;
+                    while(true) {
+                        try {
+                            String message = String.format("message from a producer with seq-num: %s", seq);
+                            logger.info("Sending a message: " + message);
+                            messageProducer.publish(producerTopic, seq, message);
+                            seq++;
+                            Thread.sleep(1000);
+                        } catch (Exception e) { // TODO: Improve this exception handling
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    messageProducer.close();
+                }
                 break;
 
             case("cons"):
@@ -73,7 +103,7 @@ public class Main {
                                 logger.info(messageConsumer.returnMessage(record));
                                 messageConsumer.offsetCommit(record, messageConsumer.consumer);
                             }
-                            Thread.sleep(2000);
+                            Thread.sleep(1000);
                         } catch (InvalidOffsetException ioe) {
                             ioe.printStackTrace();
                         } catch (KafkaException ke) {

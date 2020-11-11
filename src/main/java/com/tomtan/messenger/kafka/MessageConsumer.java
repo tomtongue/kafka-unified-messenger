@@ -20,7 +20,7 @@ public class MessageConsumer implements KafkaClient {
     }
 
     // Setter
-    public void setClientId(String clientId) {
+    public void setClientId(String clientId) { // TODO: replace with abstractClass
         if(StringUtils.isEmpty(clientId)) {
             this.clientId = "kafka-consumer-" + UUID.randomUUID().toString();
         } else {
@@ -37,8 +37,8 @@ public class MessageConsumer implements KafkaClient {
     public void setProps(Map<String, String> mapProps) {
         if(mapProps.isEmpty()) { throw new IllegalArgumentException("Specify broker servers, etc"); }
         // TODO: Setting configuration by getting parameter
-
     }
+
     public void setTopics(List<String> topics) {
         if(topics.isEmpty()) { throw new IllegalArgumentException("Specify one or more topics"); }
         this.topics = topics;
@@ -58,7 +58,7 @@ public class MessageConsumer implements KafkaClient {
 
     // Show subscribed messages
     public String returnMessage(ConsumerRecord<Integer, String> record) {
-        return String.format("Received (%s, %s)%n", record.key(), record.value());
+        return String.format("Received (%s, %s)", record.key(), record.value());
     }
 
     // Commit offset
