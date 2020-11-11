@@ -70,7 +70,7 @@ public class Main {
                         try {
                             ConsumerRecords<Integer, String> records = messageConsumer.poll(Duration.ofSeconds(5));
                             for (ConsumerRecord<Integer, String> record : records) {
-                                messageConsumer.showMessage(record);
+                                logger.info(messageConsumer.returnMessage(record));
                                 messageConsumer.offsetCommit(record, messageConsumer.consumer);
                             }
                             Thread.sleep(2000);
