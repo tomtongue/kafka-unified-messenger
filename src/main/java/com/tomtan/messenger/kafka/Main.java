@@ -33,12 +33,12 @@ public class Main {
         List<String> topicsList = Arrays.asList(topics.split(","));
 
         // Move this part to each components in the future
-        Properties conf = new Properties();
-        conf.setProperty("bootstrap.servers", bootstrapServers);
-        conf.setProperty("group.id", groupId);
-        conf.setProperty("enable.auto.commit", "false");
-        conf.setProperty("key.deserializer", "org.apache.kafka.common.serialization.IntegerDeserializer");
-        conf.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        Properties consConf = new Properties();
+        consConf.setProperty("bootstrap.servers", bootstrapServers);
+        consConf.setProperty("group.id", groupId);
+        consConf.setProperty("enable.auto.commit", "false");
+        consConf.setProperty("key.deserializer", "org.apache.kafka.common.serialization.IntegerDeserializer");
+        consConf.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
 
         String inputLog = String.format(
                 "mode: %s, specified servers: %s, groupId: %s, topics: %s",
@@ -51,7 +51,7 @@ public class Main {
                 break;
 
             case("cons"):
-                MessageConsumer messageConsumer = new MessageConsumer(conf);
+                MessageConsumer messageConsumer = new MessageConsumer(consConf);
                 messageConsumer.setGroupId(groupId);
                 messageConsumer.setTopics(topicsList);
 
@@ -65,9 +65,9 @@ public class Main {
                 // Subscribe operation
                 messageConsumer.subscribe(messageConsumerTopics);
                 try {
+                    logger.info("Start polling messages...");
                     while(true) {
                         try {
-                            logger.info("Polling messages...");
                             ConsumerRecords<Integer, String> records = messageConsumer.poll(Duration.ofSeconds(5));
                             for (ConsumerRecord<Integer, String> record : records) {
                                 messageConsumer.showMessage(record);

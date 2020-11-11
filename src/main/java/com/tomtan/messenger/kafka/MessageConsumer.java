@@ -57,8 +57,8 @@ public class MessageConsumer implements KafkaClient {
     public ConsumerRecords<Integer, String> poll(Duration timeout) { return this.consumer.poll(timeout); }
 
     // Show subscribed messages
-    public String showMessage(ConsumerRecord<Integer, String> record) {
-        return String.format("Received (%s, %s)", record.key(), record.value());
+    public void showMessage(ConsumerRecord<Integer, String> record) {
+        System.out.printf("Received (%s, %s)%n", record.key(), record.value());
     }
 
     // Commit offset
