@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.tomtan</groupId>
-    <artifactId>kafka-messenger-sample</artifactId>
+    <artifactId>kafka-unified-messenger</artifactId>
     <version>0.1</version>
 
     <build>
