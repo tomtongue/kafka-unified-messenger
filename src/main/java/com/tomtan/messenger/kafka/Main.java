@@ -1,22 +1,21 @@
 package com.tomtan.messenger.kafka;
 
-import java.time.Duration;
-import java.util.List;
-import java.util.Arrays;
-import java.util.Properties;
-import java.util.logging.*;
-
-import kafka.common.KafkaException;
+import com.google.common.base.Strings;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
-
-import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.InvalidOffsetException;
+
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 public class Main {
     public static String sysGetProperty(String key) {
         String sysProp = System.getProperty(key);
-        if(StringUtils.isEmpty(sysProp)) { throw new IllegalArgumentException(String.format("The key: '%s' is required.", key)); }
+        if(Strings.isNullOrEmpty(sysProp)) { throw new IllegalArgumentException(String.format("The key: '%s' is required.", key)); }
         return sysProp;
     }
     public static void main(String[] args) {
@@ -33,17 +32,19 @@ public class Main {
         String topics = sysGetProperty("topics");
         List<String> topicsList = Arrays.asList(topics.split(","));
 
-        // Move this part to each components in the future
-        Properties prodConf = new Properties();
-        prodConf.setProperty("bootstrap.servers", bootstrapServers);
-        prodConf.setProperty("key.serializer", "org.apache.kafka.common.serialization.IntegerSerializer");
-        prodConf.setProperty("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        Properties consConf = new Properties();
-        consConf.setProperty("bootstrap.servers", bootstrapServers);
-        consConf.setProperty("group.id", groupId);
-        consConf.setProperty("enable.auto.commit", "false");
-        consConf.setProperty("key.deserializer", "org.apache.kafka.common.serialization.IntegerDeserializer");
-        consConf.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        // TODO: Move to read the external config file (set temporarily), and move this part to test
+        Map<String, String> prodMap = new HashMap<>();
+        prodMap.put("bootstrap.servers", bootstrapServers);
+        prodMap.put("key.serializer", "org.apache.kafka.common.serialization.IntegerSerializer");
+        prodMap.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+
+        // TODO: Move to read the external config file (set temporarily), and move this part to test
+        Map<String, String> consMap = new HashMap<>();
+        consMap.put("bootstrap.servers", bootstrapServers);
+        consMap.put("group.id", groupId);
+        consMap.put("enable.auto.commit", "false");
+        consMap.put("key.deserializer", "org.apache.kafka.common.serialization.IntegerDeserializer");
+        consMap.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
 
 
 
@@ -54,7 +55,7 @@ public class Main {
 
         switch(mode) {
             case("prod"):
-                MessageProducer messageProducer= new MessageProducer(prodConf);
+                MessageProducer messageProducer= new MessageProducer(prodMap);
                 messageProducer.setClientId(null);
                 messageProducer.setTopic(topic);
 
@@ -81,7 +82,7 @@ public class Main {
                 break;
 
             case("cons"):
-                MessageConsumer messageConsumer = new MessageConsumer(consConf);
+                MessageConsumer messageConsumer = new MessageConsumer(consMap);
                 messageConsumer.setGroupId(groupId);
                 messageConsumer.setTopics(topicsList);
 
@@ -106,8 +107,6 @@ public class Main {
                             Thread.sleep(1000);
                         } catch (InvalidOffsetException ioe) {
                             ioe.printStackTrace();
-                        } catch (KafkaException ke) {
-                            ke.printStackTrace();
                         }
                     }
                 } catch (Exception e) {

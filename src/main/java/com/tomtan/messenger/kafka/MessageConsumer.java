@@ -1,35 +1,37 @@
 package com.tomtan.messenger.kafka;
 
-import java.time.Duration;
-import java.util.*;
-
+import com.google.common.base.Strings;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
-import org.apache.commons.lang3.StringUtils;
 
+import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
-public class MessageConsumer implements KafkaClient {
-    private String clientId;
-    private String groupId;
-    private Map<String, String> mapProps; // TODO: Implementation of the parser
-    private List<String> topics;
+public class MessageConsumer extends KafkaAbsClient {
     KafkaConsumer<Integer, String> consumer;
 
-    public MessageConsumer(Properties props) {
-        this.consumer = new KafkaConsumer<>(props);
+    private String groupId;
+    private List<String> topics;
+
+
+    public MessageConsumer(Map<String, String> mapProps) {
+        if(mapProps.isEmpty()) throw new IllegalArgumentException("The consumer configuration is empty. You need to specify them.");
+
+        this.props = new Properties();
+        this.mapProps = mapProps;
+
+        for(String key: mapProps.keySet()) {
+            this.props.setProperty(key, mapProps.get(key));
+        }
+        this.consumer = new KafkaConsumer<>(this.props);
     }
 
-    // Setter
-    public void setClientId(String clientId) { // TODO: replace with abstractClass
-        if(StringUtils.isEmpty(clientId)) {
-            this.clientId = "kafka-consumer-" + UUID.randomUUID().toString();
-        } else {
-            this.clientId = clientId;
-        }
-    }
 
     public void setGroupId(String groupId) {
-        if(StringUtils.isEmpty(groupId)) { throw new IllegalArgumentException("Specify groupId, etc"); }
+        if(Strings.isNullOrEmpty(groupId)) { throw new IllegalArgumentException("Specify groupId, etc"); }
 
         this.groupId = groupId;
     }

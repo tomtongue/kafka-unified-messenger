@@ -1,36 +1,38 @@
 package com.tomtan.messenger.kafka;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.kafka.clients.producer.*;
+
+import com.google.common.base.Strings;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 
 import java.util.Map;
 import java.util.Properties;
-import java.util.UUID;
 
-public class MessageProducer implements KafkaClient {
-    private String clientId;
-    private Map<String, String> mapProps; // TODO: Implementation of the parser
-    private String topic;
+
+public class MessageProducer extends KafkaAbsClient {
+    Properties props;
+    Map<String, String> mapProps;
     KafkaProducer<Integer, String> producer;
 
-    public MessageProducer(Properties props) { this.producer = new KafkaProducer<>(props); }
+    private String clientId;
+    private String topic;
 
-    // Setter
-    public void setClientId(String clientId) { // TODO: replace with abstractClass
-        if(StringUtils.isEmpty(clientId)) {
-            this.clientId = "kafka-producer-" + UUID.randomUUID().toString();
-        } else {
-            this.clientId = clientId;
+
+    public MessageProducer(Map<String, String> mapProps) {
+        if(mapProps.isEmpty()) throw new IllegalArgumentException("The producer configuration is empty. You need to specify them.");
+
+        this.props = new Properties();
+        this.mapProps = mapProps;
+
+        for(String key: mapProps.keySet()) {
+            this.props.setProperty(key, mapProps.get(key));
         }
+        this.producer = new KafkaProducer<>(this.props);
     }
 
-    public void setProps(Map<String, String> mapProps) {
-        if(mapProps.isEmpty()) { throw new IllegalArgumentException("Specify broker servers, etc"); }
-        // TODO: Setting configuration by getting parameter
-    }
 
     public void setTopic(String topic) {
-        if(StringUtils.isEmpty(topic)) { throw new IllegalArgumentException("Topic is required."); }
+        if(Strings.isNullOrEmpty(topic)) { throw new IllegalArgumentException("Topic is required."); }
         this.topic = topic;
     }
 
@@ -49,7 +51,7 @@ public class MessageProducer implements KafkaClient {
         ProducerRecord<Integer, String> record = new ProducerRecord<>(topic, key, value);
 
         this.producer.send(record, (recordMetadata, e) -> { // TODO: Output via logger
-            if(StringUtils.isEmpty(recordMetadata.toString())) {
+            if(Strings.isNullOrEmpty(recordMetadata.toString())) {
                 System.out.printf(
                         "published successfully: Partition: %s, Offset: %s",
                         recordMetadata.partition(), recordMetadata.offset());
